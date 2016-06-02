@@ -73,14 +73,14 @@ class TestJSONRPCClient(TestCase):
             self.server.serialize('my_method_name', params=('foo', 'bar'), is_notification=True)
         )
 
-    def test_parse_result(self):
+    def test_deserialize(self):
         with self.assertRaisesRegex(ProtocolError, 'Response is not a dictionary'):
-            self.server.parse_result([])
+            self.server.deserialize([])
         with self.assertRaisesRegex(ProtocolError, 'Response without a result field'):
-            self.server.parse_result({})
+            self.server.deserialize({})
         with self.assertRaises(ProtocolError) as protoerror:
             body = {"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": "1"}
-            self.server.parse_result(body)
+            self.server.deserialize(body)
         self.assertEqual(protoerror.exception.args[0], -32601)
         self.assertEqual(protoerror.exception.args[1], 'Method not found')
 
